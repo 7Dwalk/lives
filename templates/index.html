@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Registration and Login</title>
+</head>
+
+<body>
+    <h1>User Registration</h1>
+    <form id="register-form">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <input type="submit" value="Register">
+    </form>
+
+    <h1>User Login</h1>
+    <form id="login-form">
+        {% csrf_token %}
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" name="username" required><br>
+
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" name="password" required><br>
+
+        <input type="submit" value="Login">
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Register form submission
+            document.getElementById("register-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                var username = document.getElementById("username").value;
+                var email = document.getElementById("email").value;
+                var password = document.getElementById("password").value;
+                var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+                fetch("/register/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({
+
+                        "username": username,
+                        "email": email,
+                        "password": password
+                    })
+
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        alert(data.message);
+                    })
+                    .catch(function (error) {
+                        alert("An error occurred while registering: " + error);
+                    });
+            });
+
+            // Login form submission
+            document.getElementById("login-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                var username = document.getElementById("login-username").value;
+                var password = document.getElementById("login-password").value;
+                var csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+                fetch("/login/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({
+                        "csrfmiddlewaretoken": csrfToken,
+                        "username": username,
+                        "password": password
+                    })
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        alert(data.message);
+                    })
+                    .catch(function (error) {
+                        alert("An error occurred while logging in: " + error);
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
